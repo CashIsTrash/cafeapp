@@ -1,10 +1,12 @@
 package main;
 
+import main.model.Drink;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 public class PostgreSQL implements IDatabase {
     private Connection c;
@@ -201,6 +203,90 @@ public class PostgreSQL implements IDatabase {
         System.out.println("Row inserted successfully");
 
         return null;
+    }
+
+    @Override
+    public LinkedHashMap<String, List<Drink>> getTableDrinks(int tableId) {
+        try {
+            Class.forName("org.postgresql.Driver");
+            c = DriverManager
+                    .getConnection(connectionUrl, connectionUser, connectionPwd);
+            c.setAutoCommit(false);
+            System.out.println("Opened database successfully");
+
+            // Gets the newly created receipt id
+            Statement stmtQuery = c.createStatement(
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY
+            );
+
+            LinkedHashMap<String, List<Drink>> allDrinks = new LinkedHashMap<>();
+            String sql = "SELECT d.drink_name, d.drink_category, d.drink_price " +
+                    "FROM cafe.drinks d, cafe.tables_drinks td " +
+                    "JOIN cafe.tables tb ON tb.id = td.table_id " +
+                    "WHERE d.id = td.drink_id AND td.table_id = '" + tableId + "';";
+            ResultSet rs = stmtQuery.executeQuery(sql);
+            List<Drink> drinkList = new ArrayList<>();
+            while (rs.next()) {
+                Drink d = new Drink(
+                        rs.getString("drink_name"),
+                        rs.getString("drink_category"),
+                        rs.getInt("drink_price")
+                );
+                drinkList.add(d);
+            }
+
+            allDrinks.put("allDrinks", drinkList);
+
+            stmtQuery.close();
+            c.commit();
+            c.close();
+
+            return allDrinks;
+        } catch (Exception e) {
+            System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+            System.exit(0);
+        }
+        System.out.println("Row inserted successfully");
+
+        return null;
+    }
+
+    @Override
+    public int getTableId(String tableName) {
+        try {
+            Class.forName("org.postgresql.Driver");
+            c = DriverManager
+                    .getConnection(connectionUrl, connectionUser, connectionPwd);
+            c.setAutoCommit(false);
+            System.out.println("Opened database successfully");
+
+            // Gets the newly created receipt id
+            Statement stmtQuery = c.createStatement(
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY
+            );
+
+            int tableId = 0;
+            String sql = "SELECT tl.id FROM cafe.tables tl WHERE tl.table_name = " +
+                    "'" + tableName + "'" + "LIMIT 1;";
+            ResultSet rs = stmtQuery.executeQuery(sql);
+            while (rs.next()) {
+                tableId = rs.getInt("id");
+            }
+
+            stmtQuery.close();
+            c.commit();
+            c.close();
+
+            return tableId;
+        } catch (Exception e) {
+            System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+            System.exit(0);
+        }
+        System.out.println("Row inserted successfully");
+
+        return 0;
     }
 
     public void createTables() {

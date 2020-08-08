@@ -27,13 +27,14 @@ public class Root {
 
     public Root(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.root = new VBox(25);
-        root.setPadding(new Insets(10, 10, 10, 10));
+        root = new VBox(25);
+        root.setPadding(new Insets(20, 20, 20, 20));
 
-        this.adminBtns = new HBox(25);
-        this.tableIndex = 1;
-        this.colIndex = 0;
-        this.rowIndex = 0;
+        adminBtns = new HBox(25);
+
+        tableIndex = 1;
+        colIndex = 0;
+        rowIndex = 0;
 
         this.setInitialData();
         this.buttonEventListners(primaryStage);
@@ -80,7 +81,7 @@ public class Root {
             allTablesGP.add(tableBtn, colIndex , rowIndex);
 
             tableBtn.setOnAction(event -> {
-                Table t = new Table();
+                Table t = new Table(tableBtn.getText());
                 primaryStage.setTitle("Cafe App - " + tableBtn.getText());
                 primaryStage.setScene(new Scene(t.getNode(), 1920, 1080));
             });

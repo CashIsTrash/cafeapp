@@ -20,3 +20,11 @@ JOIN
 	cafe.tables tb ON tb.id = td.table_id
 WHERE
 	d.id = td.drink_id AND td.table_id = 56;
+
+-- Get tableId by Table Name
+SELECT
+	tl.id
+FROM
+	cafe.tables tl
+WHERE
+	tl.table_name = 'Table 1';
