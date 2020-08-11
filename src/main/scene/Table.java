@@ -1,14 +1,14 @@
 package main.scene;
 
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import main.PostgreSQL;
 import main.model.Drink;
 
@@ -48,6 +48,7 @@ public class Table {
         drinksTableView.setMinHeight(515);
         drinksTableView.getColumns().forEach(column -> column.setMinWidth(100));
 
+        right.setSpacing(25);
         allButtons.setHgap(25);
         allButtons.setVgap(25);
 
@@ -71,40 +72,42 @@ public class Table {
 
         allButtons.add(printReceipt, colIndex, rowIndex++);
 
-        for (Object drink : p.getDrinks().keySet()) {
-            System.out.println(rowIndex);
-            if (colIndex == 3) {
-                rowIndex++;
-                colIndex = 0;
+        for (List<Drink> drinks : p.getDrinks().values()) {
+            for (Drink d : drinks) {
+                if (colIndex == 3) {
+                    rowIndex++;
+                    colIndex = 0;
+                }
+
+                Button drinkBtn = new Button(d.getName());
+                drinkBtn.setMinHeight(100);
+                drinkBtn.setMaxHeight(100);
+                drinkBtn.setMinWidth(minWidthBtn);
+                drinkBtn.setMaxWidth(maxWidthBtn);
+                drinkBtn.setStyle(smBtnFontSize);
+
+                drinkBtn.setOnAction(event -> {
+                    int tableId = p.getTableId(tableName);
+                    p.addDrinkToTable(new Drink(
+                            d.getName(),
+                            d.getCategory(),
+                            d.getPrice()),
+                            tableId
+                    );
+                });
+
+                allButtons.add(drinkBtn, colIndex++, rowIndex);
             }
-
-            Button drinkBtn = new Button(drink.toString());
-            drinkBtn.setMinHeight(100);
-            drinkBtn.setMaxHeight(100);
-            drinkBtn.setMinWidth(minWidthBtn);
-            drinkBtn.setMaxWidth(maxWidthBtn);
-            drinkBtn.setStyle(smBtnFontSize);
-
-            allButtons.add(drinkBtn, colIndex, rowIndex);
-            colIndex++;
         }
-
         left.getChildren().add(allButtons);
 
         // Add entries to TableView receiptTableView GUI
-
         int tableId = p.getTableId(tableName);
 
         LinkedHashMap<String, List<Drink>> tableDrinks = p.getTableDrinks(tableId);
         for (List<Drink> l : tableDrinks.values()) {
-            Iterator<Drink> iterator = l.iterator();
-            while (iterator.hasNext())
-                drinksTableView.getItems().add(iterator.next());
+            for (Drink drink : l) drinksTableView.getItems().add(drink);
         }
-
-
-        //drinksTableView.getItems().add(new Drink("Cosmopolitan", "Cocktail", 25));
-        // drinksTableView.getItems().add(new Drink("Lone Star Beer", "Beer", 10));
 
         drinksTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         TableColumn<Drink, String> receiptCol1 = new TableColumn<>("Name");
@@ -116,7 +119,13 @@ public class Table {
 
         drinksTableView.getColumns().addAll(receiptCol1, receiptCol2, receiptCol3);
 
-        right.getChildren().add(drinksTableView);
+        // Table Price Texts
+        double sum = p.getTotalSumOfTable(tableName);
+
+        Text sumText = new Text(25, 25, "Total Sum: " + sum);
+        sumText.setFont(Font.font(null, FontWeight.BOLD, 32));
+
+        right.getChildren().addAll(drinksTableView, sumText);
         space.getChildren().addAll(left, right);
     }
 }

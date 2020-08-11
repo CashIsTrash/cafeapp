@@ -1,5 +1,6 @@
 package main;
 
+import jdk.jfr.StackTrace;
 import main.model.Drink;
 
 import java.sql.Connection;
@@ -33,8 +34,9 @@ public class PostgreSQL implements IDatabase {
             String sql = "INSERT INTO cafe.tables VALUES (DEFAULT, \'" + tableName + "\');";
             stmt.executeUpdate(sql);
 
-            stmt.close();
             c.commit();
+
+            stmt.close();
             c.close();
         } catch (Exception e) {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
@@ -57,8 +59,9 @@ public class PostgreSQL implements IDatabase {
                     drinkPrice + "\', \'" + drinkName + "\', \'" + drinkCategory + "\');";
             stmt.executeUpdate(sql);
 
-            stmt.close();
             c.commit();
+
+            stmt.close();
             c.close();
         } catch (Exception e) {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
@@ -68,7 +71,7 @@ public class PostgreSQL implements IDatabase {
     }
 
     @Override
-    public void addDrinkToTable(int tableId, int drinkId) {
+    public void addDrinkToTable(Drink drink, int tableId) {
         try {
             Class.forName("org.postgresql.Driver");
             c = DriverManager
@@ -77,15 +80,19 @@ public class PostgreSQL implements IDatabase {
             System.out.println("Opened database successfully");
 
             stmt = c.createStatement();
+            int drinkId = this.getDrinkId(drink.getName());
             String sql = "INSERT INTO cafe.tables_drinks VALUES (\'" +
                     tableId + "\', \'" + drinkId + "\');";
             stmt.executeUpdate(sql);
 
-            stmt.close();
             c.commit();
+            stmt.close();
             c.close();
         } catch (Exception e) {
-            System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+            System.err.println( e.getClass().getName()+": "+ e.getMessage());
+            for (StackTraceElement error : e.getStackTrace()) {
+                System.out.println(error);
+            }
             System.exit(0);
         }
         System.out.println("Row inserted successfully");
@@ -122,9 +129,10 @@ public class PostgreSQL implements IDatabase {
             String sql3 = "INSERT INTO cafe.receipts_tables VALUES (" + receiptId + ", " + tableId + ")";
             stmt.executeUpdate(sql3);
 
+            c.commit();
+
             stmtQuery.close();
             stmt.close();
-            c.commit();
             c.close();
         } catch (Exception e) {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
@@ -155,8 +163,9 @@ public class PostgreSQL implements IDatabase {
                 allTables.put(rs.getInt("id"), rs.getString("table_name"));
             }
 
-            stmtQuery.close();
             c.commit();
+
+            stmtQuery.close();
             c.close();
 
             return allTables;
@@ -170,7 +179,7 @@ public class PostgreSQL implements IDatabase {
     }
 
     @Override
-    public LinkedHashMap<String, String> getDrinks() {
+    public LinkedHashMap<String, List<Drink>> getDrinks() {
         try {
             Class.forName("org.postgresql.Driver");
             c = DriverManager
@@ -184,15 +193,23 @@ public class PostgreSQL implements IDatabase {
                     ResultSet.CONCUR_READ_ONLY
             );
 
-            LinkedHashMap<String, String> allDrinks = new LinkedHashMap<>();
+            LinkedHashMap<String, List<Drink>> allDrinks = new LinkedHashMap<>();
             String sql = "SELECT * FROM cafe.drinks;";
             ResultSet rs = stmtQuery.executeQuery(sql);
+            List<Drink> drinkList = new ArrayList<>();
             while (rs.next()) {
-                allDrinks.put(rs.getString("drink_name"), rs.getString("drink_category"));
+                Drink d = new Drink(rs.getString("drink_name"),
+                        rs.getString("drink_category"),
+                        rs.getDouble("drink_price")
+                );
+                drinkList.add(d);
             }
 
-            stmtQuery.close();
+            allDrinks.put("allDrinks", drinkList);
+
             c.commit();
+
+            stmtQuery.close();
             c.close();
 
             return allDrinks;
@@ -231,15 +248,16 @@ public class PostgreSQL implements IDatabase {
                 Drink d = new Drink(
                         rs.getString("drink_name"),
                         rs.getString("drink_category"),
-                        rs.getInt("drink_price")
+                        rs.getDouble("drink_price")
                 );
                 drinkList.add(d);
             }
 
             allDrinks.put("allDrinks", drinkList);
 
-            stmtQuery.close();
             c.commit();
+
+            stmtQuery.close();
             c.close();
 
             return allDrinks;
@@ -275,8 +293,9 @@ public class PostgreSQL implements IDatabase {
                 tableId = rs.getInt("id");
             }
 
-            stmtQuery.close();
             c.commit();
+
+            stmtQuery.close();
             c.close();
 
             return tableId;
@@ -289,7 +308,83 @@ public class PostgreSQL implements IDatabase {
         return 0;
     }
 
-    public void createTables() {
+    @Override
+    public int getDrinkId(String drinkName) {
+        try {
+            Class.forName("org.postgresql.Driver");
+            c = DriverManager
+                    .getConnection(connectionUrl, connectionUser, connectionPwd);
+            c.setAutoCommit(false);
+            System.out.println("Opened database successfully");
 
+            // Gets the newly created receipt id
+            Statement stmtQuery = c.createStatement(
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY
+            );
+
+            int tableId = 0;
+            String sql = "SELECT dr.id FROM cafe.drinks dr WHERE dr.drink_name = " +
+                    "'" + drinkName + "'" + "LIMIT 1;";
+            ResultSet rs = stmtQuery.executeQuery(sql);
+            while (rs.next()) {
+                tableId = rs.getInt("id");
+            }
+
+            c.commit();
+
+            stmtQuery.close();
+            c.close();
+
+            return tableId;
+        } catch (Exception e) {
+            System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+            System.exit(0);
+        }
+        System.out.println("Row inserted successfully");
+
+        return 0;
+    }
+
+    @Override
+    public double getTotalSumOfTable(String tableName) {
+        int tableId = this.getTableId(tableName);
+        try {
+            Class.forName("org.postgresql.Driver");
+            c = DriverManager
+                    .getConnection(connectionUrl, connectionUser, connectionPwd);
+            c.setAutoCommit(false);
+            System.out.println("Opened database successfully");
+
+            // Gets the newly created receipt id
+            Statement stmtQuery = c.createStatement(
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY
+            );
+
+            String sql = "SELECT SUM(d.drink_price) as total_sum " +
+                    "FROM cafe.drinks d, cafe.tables_drinks td " +
+                    "JOIN cafe.tables tb ON tb.id = td.table_id " +
+                    "WHERE d.id = td.drink_id AND td.table_id = " + tableId + ";";
+            ResultSet rs = stmtQuery.executeQuery(sql);
+
+            double sum = 0;
+            while (rs.next()) {
+                sum = rs.getDouble("total_sum");
+            }
+
+            c.commit();
+
+            stmtQuery.close();
+            c.close();
+
+            return sum;
+        } catch (Exception e) {
+            System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+            System.exit(0);
+        }
+        System.out.println("Row inserted successfully");
+
+        return 0;
     }
 }

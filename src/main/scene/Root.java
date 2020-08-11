@@ -17,6 +17,7 @@ public class Root {
     private final GridPane allTablesGP = new GridPane();
     private final Button addTableBtn = new Button("Add Table");
     private final Button allReceiptsBtn = new Button("All Receipts");
+    private final Button statsBtn = new Button("Statistics");
     private final String bigBtnFontSize = "-fx-font-size:40";
     private final String smBtnFontSize = "-fx-font-size:20";
     private final int maxWidthBtn = 250;
@@ -39,7 +40,7 @@ public class Root {
         this.setInitialData();
         this.buttonEventListners(primaryStage);
 
-        adminBtns.getChildren().addAll(addTableBtn, allReceiptsBtn);
+        adminBtns.getChildren().addAll(addTableBtn, allReceiptsBtn, statsBtn);
         this.root.getChildren().addAll(adminBtns, allTablesGP);
     }
 
@@ -60,6 +61,12 @@ public class Root {
         allReceiptsBtn.setMinWidth(minWidthBtn);
         allReceiptsBtn.setMaxWidth(maxWidthBtn);
         allReceiptsBtn.setStyle(smBtnFontSize);
+
+        statsBtn.setMinHeight(100);
+        statsBtn.setMaxHeight(100);
+        statsBtn.setMinWidth(minWidthBtn);
+        statsBtn.setMaxWidth(maxWidthBtn);
+        statsBtn.setStyle(smBtnFontSize);
 
         allTablesGP.setVgap(25);
         allTablesGP.setHgap(25);
@@ -115,6 +122,11 @@ public class Root {
             AllReceipts ar = new AllReceipts();
             primaryStage.setTitle("Cafe App - " + allReceiptsBtn.getText());
             primaryStage.setScene(new Scene(ar.getNode(), 1920, 1080));
+        });
+
+        statsBtn.setOnAction(event -> {
+            System.out.println("Here we should have the list of all drinks that are sold" +
+                    "and statistics of how many, how much etc etc.");
         });
     }
 }

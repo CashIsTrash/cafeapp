@@ -28,3 +28,62 @@ FROM
 	cafe.tables tl
 WHERE
 	tl.table_name = 'Table 1';
+
+--Get drinkId by Drink Name
+SELECT
+	dr.id
+FROM
+	cafe.drinks dr
+WHERE
+	dr.drink_name = 'Mohito'
+
+--Get TOTAL SUM of specific table
+SELECT
+	SUM(d.drink_price) as total_sum
+FROM
+	cafe.drinks d,
+    cafe.tables_drinks td
+JOIN
+	cafe.tables tb ON tb.id = td.table_id
+WHERE
+	d.id = td.drink_id AND td.table_id = 56
+
+--CREATING A VIEW
+--normal query
+SELECT
+	tb.table_name,
+  cd.drink_name,
+  cd.drink_price
+FROM
+	cafe.tables_drinks td
+JOIN
+	cafe.tables tb ON tb.id = td.table_id
+JOIN
+	cafe.drinks cd ON cd.id = td.drink_id
+--Converted to view:
+CREATE VIEW
+	all_ordered_drinks
+AS SELECT
+	tb.table_name,
+  cd.drink_name,
+  cd.drink_price
+FROM
+	cafe.tables_drinks td
+JOIN
+	cafe.tables tb ON tb.id = td.table_id
+JOIN
+	cafe.drinks cd ON cd.id = td.drink_id
+
+--get the view info:
+SELECT
+    *
+FROM
+   all_ordered_drinks
+
+--Get some statistics of the all drinks bought
+SELECT
+  SUM(drink_price) as total_revenue,
+  AVG(drink_price) as drink_price_average,
+  COUNT(drink_price) as sold_drinks
+FROM
+	all_ordered_drinks
