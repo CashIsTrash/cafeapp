@@ -38,7 +38,7 @@ public class Root {
         rowIndex = 0;
 
         this.setInitialData();
-        this.buttonEventListners(primaryStage);
+        this.eventListners(primaryStage);
 
         adminBtns.getChildren().addAll(addTableBtn, allReceiptsBtn, statsBtn);
         this.root.getChildren().addAll(adminBtns, allTablesGP);
@@ -88,7 +88,7 @@ public class Root {
             allTablesGP.add(tableBtn, colIndex , rowIndex);
 
             tableBtn.setOnAction(event -> {
-                Table t = new Table(tableBtn.getText());
+                Table t = new Table(tableBtn.getText(), primaryStage);
                 primaryStage.setTitle("Cafe App - " + tableBtn.getText());
                 primaryStage.setScene(new Scene(t.getNode(), 1920, 1080));
             });
@@ -98,7 +98,7 @@ public class Root {
         }
     }
 
-    public void buttonEventListners(Stage primaryStage) {
+    public void eventListners(Stage primaryStage) {
         addTableBtn.setOnAction(event -> {
             String tableName = "Table " + tableIndex;
             Button tableBtn = new Button(tableName);
@@ -127,6 +127,9 @@ public class Root {
         statsBtn.setOnAction(event -> {
             System.out.println("Here we should have the list of all drinks that are sold" +
                     "and statistics of how many, how much etc etc.");
+            Statistics stats = new Statistics();
+            primaryStage.setTitle("Cafe App - " + statsBtn.getText());
+            primaryStage.setScene(new Scene(stats.getNode(), 1920, 1080));
         });
     }
 }

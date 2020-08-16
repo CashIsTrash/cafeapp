@@ -61,12 +61,13 @@ JOIN
 JOIN
 	cafe.drinks cd ON cd.id = td.drink_id
 --Converted to view:
-CREATE VIEW
+CREATE OR REPLACE VIEW
 	all_ordered_drinks
 AS SELECT
 	tb.table_name,
-  cd.drink_name,
-  cd.drink_price
+    cd.drink_name,
+    cd.drink_price,
+    cd.drink_category
 FROM
 	cafe.tables_drinks td
 JOIN
@@ -87,3 +88,9 @@ SELECT
   COUNT(drink_price) as sold_drinks
 FROM
 	all_ordered_drinks
+
+--Get all receipts
+SELECT
+    *
+FROM
+    cafe.receipts

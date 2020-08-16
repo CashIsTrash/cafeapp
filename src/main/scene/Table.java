@@ -1,6 +1,7 @@
 package main.scene;
 
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
@@ -9,18 +10,23 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import main.PostgreSQL;
 import main.model.Drink;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Table {
     private final PostgreSQL p = new PostgreSQL();
+    private Stage primaryStage;
     private HBox space;
     private VBox left;
     private VBox right;
     private GridPane allButtons = null;
     private TableView<Drink> drinksTableView = null;
+    private Button printReceipt = new Button("Print Receipt");
     private String tableName;
 
     private final String bigBtnFontSize = "-fx-font-size:40";
@@ -29,8 +35,10 @@ public class Table {
     private final int minWidthBtn = 250;
     private int colIndex;
     private int rowIndex;
+    private double sum;
 
-    public Table(String tn) {
+    public Table(String tn, Stage ps) {
+        primaryStage = ps;
         tableName = tn;
 
         space = new HBox();
@@ -54,8 +62,10 @@ public class Table {
 
         colIndex = 0;
         rowIndex = 0;
+        sum = 0;
 
         this.setInitialData();
+        this.eventListeners(primaryStage);
     }
 
     public HBox getNode() {
@@ -63,7 +73,6 @@ public class Table {
     }
 
     public void setInitialData() {
-        Button printReceipt = new Button("Print Receipt");
         printReceipt.setMinHeight(100);
         printReceipt.setMaxHeight(100);
         printReceipt.setMinWidth(minWidthBtn);
@@ -88,12 +97,12 @@ public class Table {
 
                 drinkBtn.setOnAction(event -> {
                     int tableId = p.getTableId(tableName);
-                    p.addDrinkToTable(new Drink(
+                    Drink drink = new Drink(
                             d.getName(),
                             d.getCategory(),
-                            d.getPrice()),
-                            tableId
-                    );
+                            d.getPrice());
+                    p.addDrinkToTable(drink, tableId);
+                    drinksTableView.getItems().add(drink);
                 });
 
                 allButtons.add(drinkBtn, colIndex++, rowIndex);
@@ -120,12 +129,25 @@ public class Table {
         drinksTableView.getColumns().addAll(receiptCol1, receiptCol2, receiptCol3);
 
         // Table Price Texts
-        double sum = p.getTotalSumOfTable(tableName);
+        sum = p.getTotalSumOfTable(tableName);
 
         Text sumText = new Text(25, 25, "Total Sum: " + sum);
         sumText.setFont(Font.font(null, FontWeight.BOLD, 32));
 
         right.getChildren().addAll(drinksTableView, sumText);
         space.getChildren().addAll(left, right);
+    }
+
+    public void eventListeners(Stage primaryStage) {
+        printReceipt.setOnAction(event -> {
+            // create receipt
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date date = new Date();
+            int tableId = p.getTableId(tableName);
+            p.addReceipt("Kalle Anka", dateFormat.format(date), tableId);
+
+            AllReceipts ar = new AllReceipts();
+            primaryStage.setScene(new Scene(ar.getNode(), 1920, 1080));
+        });
     }
 }

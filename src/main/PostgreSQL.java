@@ -1,7 +1,7 @@
 package main;
 
-import jdk.jfr.StackTrace;
 import main.model.Drink;
+import main.model.Receipt;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -72,6 +72,8 @@ public class PostgreSQL implements IDatabase {
 
     @Override
     public void addDrinkToTable(Drink drink, int tableId) {
+        int drinkId = this.getDrinkId(drink.getName());
+
         try {
             Class.forName("org.postgresql.Driver");
             c = DriverManager
@@ -80,9 +82,8 @@ public class PostgreSQL implements IDatabase {
             System.out.println("Opened database successfully");
 
             stmt = c.createStatement();
-            int drinkId = this.getDrinkId(drink.getName());
-            String sql = "INSERT INTO cafe.tables_drinks VALUES (\'" +
-                    tableId + "\', \'" + drinkId + "\');";
+            String sql = "INSERT INTO cafe.tables_drinks VALUES (" +
+                    tableId + ", " + drinkId + ");";
             stmt.executeUpdate(sql);
 
             c.commit();
@@ -271,6 +272,101 @@ public class PostgreSQL implements IDatabase {
     }
 
     @Override
+    public LinkedHashMap<String, List<Drink>> getAllSoldDrinks() {
+        try {
+            Class.forName("org.postgresql.Driver");
+            c = DriverManager
+                    .getConnection(connectionUrl, connectionUser, connectionPwd);
+            c.setAutoCommit(false);
+            System.out.println("Opened database successfully");
+
+            // Gets the newly created receipt id
+            Statement stmtQuery = c.createStatement(
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY
+            );
+
+            LinkedHashMap<String, List<Drink>> allDrinks = new LinkedHashMap<>();
+            String sql = "SELECT * FROM all_ordered_drinks";
+            ResultSet rs = stmtQuery.executeQuery(sql);
+            List<Drink> drinkList = new ArrayList<>();
+
+            while (rs.next()) {
+                Drink d = new Drink(
+                        rs.getString("drink_name"),
+                        rs.getString("drink_category"),
+                        rs.getDouble("drink_price")
+                );
+                drinkList.add(d);
+            }
+
+            allDrinks.put("allSoldDrinks", drinkList);
+
+            c.commit();
+
+            stmtQuery.close();
+            c.close();
+
+            return allDrinks;
+        } catch (Exception e) {
+            System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+            System.exit(0);
+        }
+        System.out.println("Row inserted successfully");
+
+        return null;
+    }
+
+    @Override
+    public LinkedHashMap<String, List<Receipt>> getAllReceipts() {
+        try {
+            Class.forName("org.postgresql.Driver");
+            c = DriverManager
+                    .getConnection(connectionUrl, connectionUser, connectionPwd);
+            c.setAutoCommit(false);
+            System.out.println("Opened database successfully");
+
+            // Gets the newly created receipt id
+            Statement stmtQuery = c.createStatement(
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY
+            );
+
+            LinkedHashMap<String, List<Receipt>> allReceipts = new LinkedHashMap<>();
+            String sql = "SELECT ct.id, ct.table_name, cr.receipt_server, cr.receipt_date, " +
+                    "cr.total_sum FROM cafe.tables ct, cafe.receipts_tables crt " +
+                    "JOIN cafe.receipts cr ON cr.id = crt.receipt_id " +
+                    "WHERE ct.id = crt.tables_id;";
+            ResultSet rs = stmtQuery.executeQuery(sql);
+
+            List<Receipt> receipts = new ArrayList<>();
+            while (rs.next()) {
+                System.out.println(rs.getString("table_name"));
+                receipts.add(new Receipt(
+                        rs.getString("table_name"),
+                        rs.getString("receipt_server"),
+                        rs.getString("receipt_date"),
+                        rs.getDouble("total_sum")
+                ));
+            }
+
+            allReceipts.put("allReceipts", receipts);
+
+            c.commit();
+            stmtQuery.close();
+            c.close();
+
+            return allReceipts;
+        } catch (Exception e) {
+            System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+            System.exit(0);
+        }
+        System.out.println("Row inserted successfully");
+
+        return null;
+    }
+
+    @Override
     public int getTableId(String tableName) {
         try {
             Class.forName("org.postgresql.Driver");
@@ -287,13 +383,12 @@ public class PostgreSQL implements IDatabase {
 
             int tableId = 0;
             String sql = "SELECT tl.id FROM cafe.tables tl WHERE tl.table_name = " +
-                    "'" + tableName + "'" + "LIMIT 1;";
+                    "'" + tableName + "'" + " LIMIT 1;";
+            System.out.print(sql);
             ResultSet rs = stmtQuery.executeQuery(sql);
             while (rs.next()) {
                 tableId = rs.getInt("id");
             }
-
-            c.commit();
 
             stmtQuery.close();
             c.close();
@@ -386,5 +481,50 @@ public class PostgreSQL implements IDatabase {
         System.out.println("Row inserted successfully");
 
         return 0;
+    }
+
+    @Override
+    public LinkedHashMap<String, LinkedHashMap<String, Double>> getStatistics() {
+        try {
+            Class.forName("org.postgresql.Driver");
+            c = DriverManager
+                    .getConnection(connectionUrl, connectionUser, connectionPwd);
+            c.setAutoCommit(false);
+            System.out.println("Opened database successfully");
+
+            // Gets the newly created receipt id
+            Statement stmtQuery = c.createStatement(
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY
+            );
+
+            LinkedHashMap<String, LinkedHashMap<String, Double>> stats = new LinkedHashMap<>();
+            LinkedHashMap<String, Double> numbers = new LinkedHashMap<>();
+
+            String sql = "SELECT SUM(drink_price) as total_revenue, AVG(drink_price) as drink_price_average, " +
+                    "COUNT(drink_price) as sold_drinks FROM all_ordered_drinks";
+            ResultSet rs = stmtQuery.executeQuery(sql);
+
+            while (rs.next()) {
+                numbers.put("total_revenue", rs.getDouble("total_revenue"));
+                numbers.put("drink_price_average", rs.getDouble("drink_price_average"));
+                numbers.put("sold_drinks", rs.getDouble("sold_drinks"));
+            }
+
+            stats.put("stats", numbers);
+
+            c.commit();
+
+            stmtQuery.close();
+            c.close();
+
+            return stats;
+        } catch (Exception e) {
+            System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+            System.exit(0);
+        }
+        System.out.println("Row inserted successfully");
+
+        return null;
     }
 }

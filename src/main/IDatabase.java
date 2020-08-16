@@ -1,6 +1,7 @@
 package main;
 
 import main.model.Drink;
+import main.model.Receipt;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -16,9 +17,14 @@ public interface IDatabase {
     LinkedHashMap<Integer, String> getTables(); // LinkedHashMap removes duplicates
     LinkedHashMap<String, List<Drink>> getDrinks();
     LinkedHashMap<String, List<Drink>> getTableDrinks(int tableId);
+    LinkedHashMap<String, List<Drink>> getAllSoldDrinks();
+    LinkedHashMap<String, List<Receipt>> getAllReceipts();
 
     int getTableId(String tableName);
     int getDrinkId(String drinkName);
 
+
     double getTotalSumOfTable(String tableName);
+
+    LinkedHashMap<String, LinkedHashMap<String, Double>> getStatistics();
 }
