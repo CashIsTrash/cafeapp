@@ -5,11 +5,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import main.scene.Root;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 public class Main extends Application {
     private final PostgreSQL testP = new PostgreSQL();
 

@@ -2,12 +2,9 @@ package main;
 
 import main.model.Drink;
 import main.model.Receipt;
-import main.scene.Table;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public interface IDatabase {
     // Add data

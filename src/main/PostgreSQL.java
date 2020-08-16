@@ -2,7 +2,6 @@ package main;
 
 import main.model.Drink;
 import main.model.Receipt;
-import main.scene.Table;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -29,21 +28,18 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-            System.out.println("Opened database successfully");
 
             stmt = c.createStatement();
             String sql = "INSERT INTO cafe.tables VALUES (DEFAULT, \'" + tableName + "\');";
             stmt.executeUpdate(sql);
 
             c.commit();
-
             stmt.close();
             c.close();
         } catch (Exception e) {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-        System.out.println("Row inserted successfully");
     }
 
     @Override
@@ -53,7 +49,6 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-            System.out.println("Opened database successfully");
 
             stmt = c.createStatement();
             String sql = "INSERT INTO cafe.drinks VALUES (DEFAULT, \'" +
@@ -61,26 +56,22 @@ public class PostgreSQL implements IDatabase {
             stmt.executeUpdate(sql);
 
             c.commit();
-
             stmt.close();
             c.close();
         } catch (Exception e) {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-        System.out.println("Row inserted successfully");
     }
 
     @Override
     public void addDrinkToTable(Drink drink, int tableId) {
         int drinkId = this.getDrinkId(drink.getName());
-
         try {
             Class.forName("org.postgresql.Driver");
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-            System.out.println("Opened database successfully");
 
             stmt = c.createStatement();
             String sql = "INSERT INTO cafe.tables_drinks VALUES (" +
@@ -97,7 +88,6 @@ public class PostgreSQL implements IDatabase {
             }
             System.exit(0);
         }
-        System.out.println("Row inserted successfully");
     }
 
     @Override
@@ -107,8 +97,6 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-            System.out.println("Opened database successfully");
-
             stmt = c.createStatement();
 
             // Creates receipt
@@ -132,7 +120,6 @@ public class PostgreSQL implements IDatabase {
             stmt.executeUpdate(sql3);
 
             c.commit();
-
             stmtQuery.close();
             stmt.close();
             c.close();
@@ -140,7 +127,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-        System.out.println("Row inserted successfully");
     }
 
     @Override
@@ -150,7 +136,6 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-            System.out.println("Opened database successfully");
 
             // Gets the newly created receipt id
             Statement stmtQuery = c.createStatement(
@@ -166,7 +151,6 @@ public class PostgreSQL implements IDatabase {
             }
 
             c.commit();
-
             stmtQuery.close();
             c.close();
 
@@ -175,7 +159,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-        System.out.println("Row inserted successfully");
 
         return null;
     }
@@ -187,7 +170,6 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-            System.out.println("Opened database successfully");
 
             // Gets the newly created receipt id
             Statement stmtQuery = c.createStatement(
@@ -212,7 +194,6 @@ public class PostgreSQL implements IDatabase {
             allDrinks.put("allDrinks", drinkList);
 
             c.commit();
-
             stmtQuery.close();
             c.close();
 
@@ -221,7 +202,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-        System.out.println("Row inserted successfully");
 
         return null;
     }
@@ -233,7 +213,6 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-            System.out.println("Opened database successfully");
 
             // Gets the newly created receipt id
             Statement stmtQuery = c.createStatement(
@@ -257,11 +236,9 @@ public class PostgreSQL implements IDatabase {
                 );
                 drinkList.add(d);
             }
-
             allDrinks.put("allDrinks", drinkList);
 
             c.commit();
-
             stmtQuery.close();
             c.close();
 
@@ -270,7 +247,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-        System.out.println("Row inserted successfully");
 
         return null;
     }
@@ -282,7 +258,6 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-            System.out.println("Opened database successfully");
 
             // Gets the newly created receipt id
             Statement stmtQuery = c.createStatement(
@@ -304,11 +279,9 @@ public class PostgreSQL implements IDatabase {
                 );
                 drinkList.add(d);
             }
-
             allDrinks.put("allSoldDrinks", drinkList);
 
             c.commit();
-
             stmtQuery.close();
             c.close();
 
@@ -317,7 +290,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-        System.out.println("Row inserted successfully");
 
         return null;
     }
@@ -329,7 +301,6 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-            System.out.println("Opened database successfully");
 
             // Gets the newly created receipt id
             Statement stmtQuery = c.createStatement(
@@ -354,7 +325,6 @@ public class PostgreSQL implements IDatabase {
                         rs.getDouble("total_sum")
                 ));
             }
-
             allReceipts.put("allReceipts", receipts);
 
             c.commit();
@@ -366,7 +336,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-        System.out.println("Row inserted successfully");
 
         return null;
     }
@@ -378,7 +347,6 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-            System.out.println("Opened database successfully");
 
             // Gets the newly created receipt id
             Statement stmtQuery = c.createStatement(
@@ -389,8 +357,8 @@ public class PostgreSQL implements IDatabase {
             int tableId = 0;
             String sql = "SELECT tl.id FROM cafe.tables tl WHERE tl.table_name = " +
                     "'" + tableName + "'" + " LIMIT 1;";
-            System.out.print(sql);
             ResultSet rs = stmtQuery.executeQuery(sql);
+
             while (rs.next()) {
                 tableId = rs.getInt("id");
             }
@@ -403,7 +371,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-        System.out.println("Row inserted successfully");
 
         return 0;
     }
@@ -415,7 +382,6 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-            System.out.println("Opened database successfully");
 
             // Gets the newly created receipt id
             Statement stmtQuery = c.createStatement(
@@ -427,12 +393,12 @@ public class PostgreSQL implements IDatabase {
             String sql = "SELECT dr.id FROM cafe.drinks dr WHERE dr.drink_name = " +
                     "'" + drinkName + "'" + "LIMIT 1;";
             ResultSet rs = stmtQuery.executeQuery(sql);
+
             while (rs.next()) {
                 tableId = rs.getInt("id");
             }
 
             c.commit();
-
             stmtQuery.close();
             c.close();
 
@@ -441,7 +407,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-        System.out.println("Row inserted successfully");
 
         return 0;
     }
@@ -454,7 +419,6 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-            System.out.println("Opened database successfully");
 
             // Gets the newly created receipt id
             Statement stmtQuery = c.createStatement(
@@ -474,7 +438,6 @@ public class PostgreSQL implements IDatabase {
             }
 
             c.commit();
-
             stmtQuery.close();
             c.close();
 
@@ -483,7 +446,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-        System.out.println("Row inserted successfully");
 
         return 0;
     }
@@ -495,7 +457,6 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-            System.out.println("Opened database successfully");
 
             // Gets the newly created receipt id
             Statement stmtQuery = c.createStatement(
