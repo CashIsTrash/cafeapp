@@ -1,6 +1,8 @@
 package main.scene;
 
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -11,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import main.PostgreSQL;
 import main.model.Drink;
 
@@ -22,8 +25,12 @@ public class Statistics {
     private VBox space = null;
     private VBox allDrinks = null;
     private TableView<Drink> drinksTableView = null;
+    private Button backBtn = new Button ("Go Back");
+    private final int maxWidthBtn = 250;
+    private final int minWidthBtn = 250;
+    private final String smBtnFontSize = "-fx-font-size:20";
 
-    public Statistics() {
+    public Statistics(Stage primaryStage) {
         space = new VBox(25);
         space.setPadding(new Insets(25, 25, 25, 25));
 
@@ -31,7 +38,7 @@ public class Statistics {
         drinksTableView = new TableView<>();
 
         this.setInitialData();
-        this.eventListeners();
+        this.eventListeners(primaryStage);
     }
 
     public VBox getNode() {
@@ -39,6 +46,12 @@ public class Statistics {
     }
 
     public void setInitialData() {
+        backBtn.setMinHeight(100);
+        backBtn.setMaxHeight(100);
+        backBtn.setMinWidth(minWidthBtn);
+        backBtn.setMaxWidth(maxWidthBtn);
+        backBtn.setStyle(smBtnFontSize);
+
         // Add entries to TableView receiptTableView GUI
         LinkedHashMap<String, List<Drink>> tableDrinks = p.getAllSoldDrinks();
         for (List<Drink> l : tableDrinks.values()) {
@@ -70,16 +83,21 @@ public class Statistics {
         soldDrinksText.setFont(Font.font(null, FontWeight.BOLD, 32));
 
         this.space.getChildren().addAll(
-                allDrinks, revenueText, drinkPriceAverageText, soldDrinksText
+                allDrinks, revenueText, drinkPriceAverageText, soldDrinksText, backBtn
         );
     }
 
-    public void eventListeners() {
+    public void eventListeners(Stage primaryStage) {
         drinksTableView.setOnMouseClicked((MouseEvent event) -> {
             if (event.getButton().equals(MouseButton.PRIMARY)) {
                 // int drinkId = drinksTableView.getSelectionModel().getSelectedItem().getId();
                 // System.out.println(drinksTableView.getSelectionModel().getSelectedItem().toString());
             }
+        });
+
+        backBtn.setOnAction(click -> {
+            Root root = new Root(primaryStage);
+            primaryStage.setScene(new Scene(root.getNode(), 1920, 1080));
         });
     }
 }

@@ -119,7 +119,7 @@ public class Root {
         });
 
         allReceiptsBtn.setOnAction(event -> {
-            AllReceipts ar = new AllReceipts();
+            AllReceipts ar = new AllReceipts(primaryStage);
             primaryStage.setTitle("Cafe App - " + allReceiptsBtn.getText());
             primaryStage.setScene(new Scene(ar.getNode(), 1920, 1080));
         });
@@ -127,7 +127,7 @@ public class Root {
         statsBtn.setOnAction(event -> {
             System.out.println("Here we should have the list of all drinks that are sold" +
                     "and statistics of how many, how much etc etc.");
-            Statistics stats = new Statistics();
+            Statistics stats = new Statistics(primaryStage);
             primaryStage.setTitle("Cafe App - " + statsBtn.getText());
             primaryStage.setScene(new Scene(stats.getNode(), 1920, 1080));
         });

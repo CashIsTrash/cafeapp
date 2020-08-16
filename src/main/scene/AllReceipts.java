@@ -1,6 +1,7 @@
 package main.scene;
 
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
@@ -9,6 +10,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import main.PostgreSQL;
 import main.model.Receipt;
 
@@ -23,11 +25,12 @@ public class AllReceipts {
     private VBox allReceiptsBtns = null;
     private TableView<Receipt> receiptTableView = null;
     private Button removeReceiptBtn = new Button("Remove Receipt");
+    private Button backBtn = new Button ("Go Back");
     private final String smBtnFontSize = "-fx-font-size:20";
     private final int maxWidthBtn = 250;
     private final int minWidthBtn = 250;
 
-    public AllReceipts() {
+    public AllReceipts(Stage primaryStage) {
         space = new VBox(25);
         space.setPadding(new Insets(25, 25, 25, 25));
 
@@ -37,7 +40,7 @@ public class AllReceipts {
         allReceiptsBtns = new VBox(25);
         receiptTableView = new TableView<>();
         this.setInitialData();
-        this.eventListeners();
+        this.eventListeners(primaryStage);
     }
 
     public VBox getNode() {
@@ -70,11 +73,17 @@ public class AllReceipts {
         removeReceiptBtn.setMaxWidth(maxWidthBtn);
         removeReceiptBtn.setStyle(smBtnFontSize);
 
-        controlBtns.getChildren().addAll(removeReceiptBtn);
+        backBtn.setMinHeight(100);
+        backBtn.setMaxHeight(100);
+        backBtn.setMinWidth(minWidthBtn);
+        backBtn.setMaxWidth(maxWidthBtn);
+        backBtn.setStyle(smBtnFontSize);
+
+        controlBtns.getChildren().addAll(removeReceiptBtn, backBtn);
         this.space.getChildren().addAll(allReceipts, controlBtns);
     }
 
-    public void eventListeners() {
+    public void eventListeners(Stage primaryStage) {
         receiptTableView.setOnMouseClicked((MouseEvent event) -> {
             if (event.getButton().equals(MouseButton.PRIMARY)) {
                 Receipt receiptObj = receiptTableView.getSelectionModel().getSelectedItem();
@@ -84,6 +93,11 @@ public class AllReceipts {
                     receiptTableView.getItems().remove(receiptObj);
                 });
             }
+        });
+
+        backBtn.setOnAction(click -> {
+            Root root = new Root(primaryStage);
+            primaryStage.setScene(new Scene(root.getNode(), 1920, 1080));
         });
     }
 }

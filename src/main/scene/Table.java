@@ -31,6 +31,7 @@ public class Table {
     private Button printReceipt = new Button("Print Receipt");
     private Button removeTable = new Button("Remove Table");
     private Button removeDrinkBtn = new Button("Remove Drink");
+    private Button backBtn = new Button ("Go Back");
     private String tableName;
 
     private final String bigBtnFontSize = "-fx-font-size:40";
@@ -98,6 +99,12 @@ public class Table {
         removeDrinkBtn.setStyle(smBtnFontSize);
         removeDrinkBtn.setDisable(true);
 
+        backBtn.setMinHeight(100);
+        backBtn.setMaxHeight(100);
+        backBtn.setMinWidth(minWidthBtn);
+        backBtn.setMaxWidth(maxWidthBtn);
+        backBtn.setStyle(smBtnFontSize);
+
         allButtons.add(printReceipt, colIndex, rowIndex);
         allButtons.add(removeTable, colIndex + 1, rowIndex);
         allButtons.add(removeDrinkBtn, colIndex + 2, rowIndex++);
@@ -129,6 +136,7 @@ public class Table {
 
                 allButtons.add(drinkBtn, colIndex++, rowIndex);
             }
+            allButtons.add(backBtn, 0, rowIndex = rowIndex + 2);
         }
         left.getChildren().add(allButtons);
 
@@ -177,7 +185,7 @@ public class Table {
             // Remove all drinks from Table here
             p.removeAllDrinksFromTable(tableId);
 
-            AllReceipts ar = new AllReceipts();
+            AllReceipts ar = new AllReceipts(primaryStage);
             primaryStage.setScene(new Scene(ar.getNode(), 1920, 1080));
         });
 
@@ -197,6 +205,11 @@ public class Table {
                     drinksTableView.getItems().remove(drinkObj);
                 });
             }
+        });
+
+        backBtn.setOnAction(click -> {
+            Root root = new Root(primaryStage);
+            primaryStage.setScene(new Scene(root.getNode(), 1920, 1080));
         });
     }
 }
