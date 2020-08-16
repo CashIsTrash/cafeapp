@@ -6,9 +6,10 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import main.PostgreSQL;
-import main.model.Drink;
 import main.model.Receipt;
 
 import java.util.LinkedHashMap;
@@ -36,7 +37,7 @@ public class AllReceipts {
         allReceiptsBtns = new VBox(25);
         receiptTableView = new TableView<>();
         this.setInitialData();
-        this.buttonEventListners();
+        this.eventListeners();
     }
 
     public VBox getNode() {
@@ -45,9 +46,8 @@ public class AllReceipts {
 
     public void setInitialData() {
         // Add entries to TableView receiptTableView GUI
-        LinkedHashMap<String, List<Receipt>> tableDrinks = p.getAllReceipts();
-        System.out.println(tableDrinks);
-        for (List<Receipt> l : tableDrinks.values()) {
+        LinkedHashMap<String, List<Receipt>> tableReceipts = p.getAllReceipts();
+        for (List<Receipt> l : tableReceipts.values()) {
             for (Receipt receipt : l) receiptTableView.getItems().add(receipt);
         }
 
@@ -74,9 +74,16 @@ public class AllReceipts {
         this.space.getChildren().addAll(allReceipts, controlBtns);
     }
 
-    public void buttonEventListners() {
-        removeReceiptBtn.setOnAction(event -> {
-            System.out.println("Hej");
+    public void eventListeners() {
+        receiptTableView.setOnMouseClicked((MouseEvent event) -> {
+            if (event.getButton().equals(MouseButton.PRIMARY)) {
+                Receipt receiptObj = receiptTableView.getSelectionModel().getSelectedItem();
+
+                removeReceiptBtn.setOnAction(clicked -> {
+                    p.removeReceipt(receiptObj);
+                    receiptTableView.getItems().remove(receiptObj);
+                });
+            }
         });
     }
 }

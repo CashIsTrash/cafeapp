@@ -1,7 +1,7 @@
 --Get table_name and server and receipt_date
 SELECT
-	ct.id, ct.table_name,
-  cr.receipt_server, cr.receipt_date
+	cr.id AS receipt_id, ct.id AS table_id, ct.table_name,
+    cr.receipt_server, cr.receipt_date
 FROM
 	cafe.tables ct,
   cafe.receipts_tables crt
@@ -61,10 +61,11 @@ JOIN
 JOIN
 	cafe.drinks cd ON cd.id = td.drink_id
 --Converted to view:
-CREATE OR REPLACE VIEW
+CREATE VIEW
 	all_ordered_drinks
 AS SELECT
 	tb.table_name,
+    cd.id AS drink_id,
     cd.drink_name,
     cd.drink_price,
     cd.drink_category
@@ -94,3 +95,14 @@ SELECT
     *
 FROM
     cafe.receipts
+
+--Remove all receipts
+
+DELETE FROM cafe.receipts_tables crt WHERE crt.receipt_id = 1;
+DELETE FROM cafe.receipts cr WHERE cr.id = 1;
+
+-- Remove all drinks from a table ID:
+
+DELETE FROM cafe.tables_drinks td WHERE td.table_id = 1;
+
+--Get total sum of a specific table

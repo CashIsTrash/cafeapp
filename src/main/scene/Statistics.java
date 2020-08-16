@@ -5,14 +5,14 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.Pane;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import main.PostgreSQL;
 import main.model.Drink;
-import main.model.Receipt;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,6 +31,7 @@ public class Statistics {
         drinksTableView = new TableView<>();
 
         this.setInitialData();
+        this.eventListeners();
     }
 
     public VBox getNode() {
@@ -44,8 +45,6 @@ public class Statistics {
             for (Drink drink : l) drinksTableView.getItems().add(drink);
         }
 
-        drinksTableView.getItems().addAll(new Drink("Lav", "Beer", 100));
-
         drinksTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         TableColumn<Drink, String> drinkCol1 = new TableColumn<>("Drink");
         TableColumn<Drink, String> drinkCol2 = new TableColumn<>("Category");
@@ -54,7 +53,7 @@ public class Statistics {
         drinkCol2.setCellValueFactory(new PropertyValueFactory<>("category"));
         drinkCol3.setCellValueFactory(new PropertyValueFactory<>("price"));
 
-        drinksTableView.getColumns().addAll(drinkCol1,drinkCol2, drinkCol3);
+        drinksTableView.getColumns().addAll(drinkCol1, drinkCol2, drinkCol3);
         allDrinks.getChildren().addAll(drinksTableView);
 
         // Table Price Texts
@@ -62,7 +61,6 @@ public class Statistics {
         double total_revenue = stats.get("stats").get("total_revenue");
         double drink_p_avg = stats.get("stats").get("drink_price_average");
         int sold_drinks = stats.get("stats").get("sold_drinks").intValue();
-        //double sum = p.getTotalSumOfTable(tableName);
 
         Text revenueText = new Text(25, 25, "Total Revenue: " + total_revenue);
         Text drinkPriceAverageText = new Text(25, 25, "Drink Price Avg: " + drink_p_avg);
@@ -74,5 +72,14 @@ public class Statistics {
         this.space.getChildren().addAll(
                 allDrinks, revenueText, drinkPriceAverageText, soldDrinksText
         );
+    }
+
+    public void eventListeners() {
+        drinksTableView.setOnMouseClicked((MouseEvent event) -> {
+            if (event.getButton().equals(MouseButton.PRIMARY)) {
+                // int drinkId = drinksTableView.getSelectionModel().getSelectedItem().getId();
+                // System.out.println(drinksTableView.getSelectionModel().getSelectedItem().toString());
+            }
+        });
     }
 }

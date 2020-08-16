@@ -38,7 +38,7 @@ public class Root {
         rowIndex = 0;
 
         this.setInitialData();
-        this.eventListners(primaryStage);
+        this.eventListeners(primaryStage);
 
         adminBtns.getChildren().addAll(addTableBtn, allReceiptsBtn, statsBtn);
         this.root.getChildren().addAll(adminBtns, allTablesGP);
@@ -98,7 +98,7 @@ public class Root {
         }
     }
 
-    public void eventListners(Stage primaryStage) {
+    public void eventListeners(Stage primaryStage) {
         addTableBtn.setOnAction(event -> {
             String tableName = "Table " + tableIndex;
             Button tableBtn = new Button(tableName);

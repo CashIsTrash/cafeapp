@@ -4,6 +4,8 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -27,6 +29,8 @@ public class Table {
     private GridPane allButtons = null;
     private TableView<Drink> drinksTableView = null;
     private Button printReceipt = new Button("Print Receipt");
+    private Button removeTable = new Button("Remove Table");
+    private Button removeDrinkBtn = new Button("Remove Drink");
     private String tableName;
 
     private final String bigBtnFontSize = "-fx-font-size:40";
@@ -78,8 +82,25 @@ public class Table {
         printReceipt.setMinWidth(minWidthBtn);
         printReceipt.setMaxWidth(maxWidthBtn);
         printReceipt.setStyle(smBtnFontSize);
+        printReceipt.setDisable(true);
 
-        allButtons.add(printReceipt, colIndex, rowIndex++);
+        removeTable.setMinHeight(100);
+        removeTable.setMaxHeight(100);
+        removeTable.setMinWidth(minWidthBtn);
+        removeTable.setMaxWidth(maxWidthBtn);
+        removeTable.setStyle(smBtnFontSize);
+        removeTable.setDisable(true);
+
+        removeDrinkBtn.setMinHeight(100);
+        removeDrinkBtn.setMaxHeight(100);
+        removeDrinkBtn.setMinWidth(minWidthBtn);
+        removeDrinkBtn.setMaxWidth(maxWidthBtn);
+        removeDrinkBtn.setStyle(smBtnFontSize);
+        removeDrinkBtn.setDisable(true);
+
+        allButtons.add(printReceipt, colIndex, rowIndex);
+        allButtons.add(removeTable, colIndex + 1, rowIndex);
+        allButtons.add(removeDrinkBtn, colIndex + 2, rowIndex++);
 
         for (List<Drink> drinks : p.getDrinks().values()) {
             for (Drink d : drinks) {
@@ -98,6 +119,7 @@ public class Table {
                 drinkBtn.setOnAction(event -> {
                     int tableId = p.getTableId(tableName);
                     Drink drink = new Drink(
+                            d.getId(),
                             d.getName(),
                             d.getCategory(),
                             d.getPrice());
@@ -118,6 +140,8 @@ public class Table {
             for (Drink drink : l) drinksTableView.getItems().add(drink);
         }
 
+        printReceipt.setDisable(false);
+
         drinksTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         TableColumn<Drink, String> receiptCol1 = new TableColumn<>("Name");
         TableColumn<Drink, String> receiptCol2 = new TableColumn<>("Category");
@@ -131,6 +155,10 @@ public class Table {
         // Table Price Texts
         sum = p.getTotalSumOfTable(tableName);
 
+        if (sum == 0) {
+            printReceipt.setDisable(true);
+        }
+
         Text sumText = new Text(25, 25, "Total Sum: " + sum);
         sumText.setFont(Font.font(null, FontWeight.BOLD, 32));
 
@@ -139,15 +167,36 @@ public class Table {
     }
 
     public void eventListeners(Stage primaryStage) {
-        printReceipt.setOnAction(event -> {
-            // create receipt
+        printReceipt.setOnAction(clicked -> {
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date date = new Date();
+
             int tableId = p.getTableId(tableName);
-            p.addReceipt("Kalle Anka", dateFormat.format(date), tableId);
+            p.addReceipt("Administrator", dateFormat.format(date), tableId, sum);
+
+            // Remove all drinks from Table here
+            p.removeAllDrinksFromTable(tableId);
 
             AllReceipts ar = new AllReceipts();
             primaryStage.setScene(new Scene(ar.getNode(), 1920, 1080));
+        });
+
+        removeTable.setOnAction(clicked -> {
+            p.removeTable(tableName);
+            Root root = new Root(primaryStage);
+            primaryStage.setScene(new Scene(root.getNode(), 1920, 1080));
+        });
+
+        drinksTableView.setOnMouseClicked((MouseEvent event) -> {
+            if (event.getButton().equals(MouseButton.PRIMARY)) {
+                removeDrinkBtn.setDisable(false);
+                Drink drinkObj = drinksTableView.getSelectionModel().getSelectedItem();
+
+                removeDrinkBtn.setOnAction(clicked -> {
+                    p.removeDrinkFromTable(tableName, drinkObj);
+                    drinksTableView.getItems().remove(drinkObj);
+                });
+            }
         });
     }
 }

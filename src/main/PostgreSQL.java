@@ -2,6 +2,7 @@ package main;
 
 import main.model.Drink;
 import main.model.Receipt;
+import main.scene.Table;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -100,7 +101,7 @@ public class PostgreSQL implements IDatabase {
     }
 
     @Override
-    public void addReceipt(String server, String date, int tableId) {
+    public void addReceipt(String server, String date, int tableId, double totalSum) {
         try {
             Class.forName("org.postgresql.Driver");
             c = DriverManager
@@ -112,7 +113,7 @@ public class PostgreSQL implements IDatabase {
 
             // Creates receipt
             String sql = "INSERT INTO cafe.receipts VALUES (DEFAULT, " +
-                    "\'" + server + "\', \'" + date + "\');";
+                    "\'" + server + "\', \'" + date + "\', " + totalSum + ");";
             stmt.executeUpdate(sql);
 
             // Gets the newly created receipt id
@@ -199,7 +200,9 @@ public class PostgreSQL implements IDatabase {
             ResultSet rs = stmtQuery.executeQuery(sql);
             List<Drink> drinkList = new ArrayList<>();
             while (rs.next()) {
-                Drink d = new Drink(rs.getString("drink_name"),
+                Drink d = new Drink(
+                        rs.getInt("id"),
+                        rs.getString("drink_name"),
                         rs.getString("drink_category"),
                         rs.getDouble("drink_price")
                 );
@@ -239,7 +242,7 @@ public class PostgreSQL implements IDatabase {
             );
 
             LinkedHashMap<String, List<Drink>> allDrinks = new LinkedHashMap<>();
-            String sql = "SELECT d.drink_name, d.drink_category, d.drink_price " +
+            String sql = "SELECT d.id, d.drink_name, d.drink_category, d.drink_price " +
                     "FROM cafe.drinks d, cafe.tables_drinks td " +
                     "JOIN cafe.tables tb ON tb.id = td.table_id " +
                     "WHERE d.id = td.drink_id AND td.table_id = '" + tableId + "';";
@@ -247,6 +250,7 @@ public class PostgreSQL implements IDatabase {
             List<Drink> drinkList = new ArrayList<>();
             while (rs.next()) {
                 Drink d = new Drink(
+                        rs.getInt("id"),
                         rs.getString("drink_name"),
                         rs.getString("drink_category"),
                         rs.getDouble("drink_price")
@@ -293,6 +297,7 @@ public class PostgreSQL implements IDatabase {
 
             while (rs.next()) {
                 Drink d = new Drink(
+                        rs.getInt("drink_id"),
                         rs.getString("drink_name"),
                         rs.getString("drink_category"),
                         rs.getDouble("drink_price")
@@ -333,7 +338,7 @@ public class PostgreSQL implements IDatabase {
             );
 
             LinkedHashMap<String, List<Receipt>> allReceipts = new LinkedHashMap<>();
-            String sql = "SELECT ct.id, ct.table_name, cr.receipt_server, cr.receipt_date, " +
+            String sql = "SELECT cr.id AS receipt_id, ct.id AS table_id, ct.table_name, cr.receipt_server, cr.receipt_date, " +
                     "cr.total_sum FROM cafe.tables ct, cafe.receipts_tables crt " +
                     "JOIN cafe.receipts cr ON cr.id = crt.receipt_id " +
                     "WHERE ct.id = crt.tables_id;";
@@ -341,8 +346,8 @@ public class PostgreSQL implements IDatabase {
 
             List<Receipt> receipts = new ArrayList<>();
             while (rs.next()) {
-                System.out.println(rs.getString("table_name"));
                 receipts.add(new Receipt(
+                        rs.getInt("receipt_id"),
                         rs.getString("table_name"),
                         rs.getString("receipt_server"),
                         rs.getString("receipt_date"),
@@ -510,11 +515,9 @@ public class PostgreSQL implements IDatabase {
                 numbers.put("drink_price_average", rs.getDouble("drink_price_average"));
                 numbers.put("sold_drinks", rs.getDouble("sold_drinks"));
             }
-
             stats.put("stats", numbers);
 
             c.commit();
-
             stmtQuery.close();
             c.close();
 
@@ -523,8 +526,99 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-        System.out.println("Row inserted successfully");
 
         return null;
+    }
+
+    @Override
+    public void removeTable(String tableName) {
+        try {
+            Class.forName("org.postgresql.Driver");
+            c = DriverManager
+                    .getConnection(connectionUrl, connectionUser, connectionPwd);
+            c.setAutoCommit(false);
+
+            Statement stmtQuery = c.createStatement();
+            String sql1 = "DELETE FROM cafe.tables td WHERE td.table_name = " + tableName + ";";
+            stmtQuery.executeUpdate(sql1);
+
+            c.commit();
+            stmtQuery.close();
+            c.close();
+        } catch (Exception e) {
+            System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+            System.exit(0);
+        }
+    }
+
+    @Override
+    public void removeDrinkFromTable(String tableName, Drink drink) {
+        int tableId = this.getTableId(tableName);
+        int drinkId = drink.getId();
+
+        try {
+            Class.forName("org.postgresql.Driver");
+            c = DriverManager
+                    .getConnection(connectionUrl, connectionUser, connectionPwd);
+            c.setAutoCommit(false);
+
+            Statement stmtQuery = c.createStatement();
+
+            String sql = "DELETE FROM cafe.tables_drinks WHERE table_id = " + tableId +
+                    " AND drink_id = " + drinkId + ";";
+            stmtQuery.executeUpdate(sql);
+
+            c.commit();
+            stmtQuery.close();
+            c.close();
+        } catch (Exception e) {
+            System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+            System.exit(0);
+        }
+    }
+
+    @Override
+    public void removeAllDrinksFromTable(int tableId) {
+        try {
+            Class.forName("org.postgresql.Driver");
+            c = DriverManager
+                    .getConnection(connectionUrl, connectionUser, connectionPwd);
+            c.setAutoCommit(false);
+
+            Statement stmtQuery = c.createStatement();
+            String sql1 = "DELETE FROM cafe.tables_drinks td WHERE td.table_id = " + tableId + ";";
+            stmtQuery.executeUpdate(sql1);
+
+            c.commit();
+            stmtQuery.close();
+            c.close();
+        } catch (Exception e) {
+            System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+            System.exit(0);
+        }
+    }
+
+    @Override
+    public void removeReceipt(Receipt receipt) {
+        try {
+            Class.forName("org.postgresql.Driver");
+            c = DriverManager
+                    .getConnection(connectionUrl, connectionUser, connectionPwd);
+            c.setAutoCommit(false);
+
+            Statement stmtQuery = c.createStatement();
+            int receiptId = receipt.getId();
+            String sql1 = "DELETE FROM cafe.receipts_tables crt WHERE crt.receipt_id = " + receiptId + ";";
+            String sql2 = "DELETE FROM cafe.receipts cr WHERE cr.id = " + receiptId + ";";
+            stmtQuery.executeUpdate(sql1);
+            stmtQuery.executeUpdate(sql2);
+
+            c.commit();
+            stmtQuery.close();
+            c.close();
+        } catch (Exception e) {
+            System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+            System.exit(0);
+        }
     }
 }
