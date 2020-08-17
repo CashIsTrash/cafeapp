@@ -7,8 +7,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -25,10 +23,7 @@ public class Statistics {
     private VBox space = null;
     private VBox allDrinks = null;
     private TableView<Drink> drinksTableView = null;
-    private Button backBtn = new Button ("Go Back");
-    private final int maxWidthBtn = 250;
-    private final int minWidthBtn = 250;
-    private final String smBtnFontSize = "-fx-font-size:20";
+    private final Button backBtn = new Button ("Go Back");
 
     public Statistics(Stage primaryStage) {
         space = new VBox(25);
@@ -46,10 +41,14 @@ public class Statistics {
     }
 
     public void setInitialData() {
-        backBtn.setMinHeight(100);
-        backBtn.setMaxHeight(100);
-        backBtn.setMinWidth(minWidthBtn);
-        backBtn.setMaxWidth(maxWidthBtn);
+        int minMaxWidthBtn = 250;
+        int minMaxHeightBtn = 250;
+        String smBtnFontSize = "-fx-font-size:20";
+
+        backBtn.setMinHeight(minMaxHeightBtn);
+        backBtn.setMaxHeight(minMaxHeightBtn);
+        backBtn.setMinWidth(minMaxWidthBtn);
+        backBtn.setMaxWidth(minMaxWidthBtn);
         backBtn.setStyle(smBtnFontSize);
 
         // Add entries to TableView receiptTableView GUI
@@ -65,8 +64,8 @@ public class Statistics {
         drinkCol1.setCellValueFactory(new PropertyValueFactory<>("name"));
         drinkCol2.setCellValueFactory(new PropertyValueFactory<>("category"));
         drinkCol3.setCellValueFactory(new PropertyValueFactory<>("price"));
-
         drinksTableView.getColumns().addAll(drinkCol1, drinkCol2, drinkCol3);
+
         allDrinks.getChildren().addAll(drinksTableView);
 
         // Table Price Texts
@@ -82,19 +81,12 @@ public class Statistics {
         drinkPriceAverageText.setFont(Font.font(null, FontWeight.BOLD, 32));
         soldDrinksText.setFont(Font.font(null, FontWeight.BOLD, 32));
 
-        this.space.getChildren().addAll(
+        space.getChildren().addAll(
                 allDrinks, revenueText, drinkPriceAverageText, soldDrinksText, backBtn
         );
     }
 
     public void eventListeners(Stage primaryStage) {
-        drinksTableView.setOnMouseClicked((MouseEvent event) -> {
-            if (event.getButton().equals(MouseButton.PRIMARY)) {
-                // int drinkId = drinksTableView.getSelectionModel().getSelectedItem().getId();
-                // System.out.println(drinksTableView.getSelectionModel().getSelectedItem().toString());
-            }
-        });
-
         backBtn.setOnAction(click -> {
             Root root = new Root(primaryStage);
             primaryStage.setScene(new Scene(root.getNode(), 1920, 1080));

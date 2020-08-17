@@ -9,6 +9,11 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
 
+/**
+ * PostgreSQL class.
+ *
+ * @author Marcus Cvjeticanin
+ */
 public class PostgreSQL implements IDatabase {
     private Connection c;
     private Statement stmt;
@@ -190,7 +195,6 @@ public class PostgreSQL implements IDatabase {
                 );
                 drinkList.add(d);
             }
-
             allDrinks.put("allDrinks", drinkList);
 
             c.commit();
@@ -500,7 +504,7 @@ public class PostgreSQL implements IDatabase {
             c.setAutoCommit(false);
 
             Statement stmtQuery = c.createStatement();
-            String sql1 = "DELETE FROM cafe.tables td WHERE td.table_name = " + tableName + ";";
+            String sql1 = "DELETE FROM cafe.tables td WHERE td.table_name = \'" + tableName + "\';";
             stmtQuery.executeUpdate(sql1);
 
             c.commit();

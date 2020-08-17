@@ -13,15 +13,13 @@ public class Root {
     private final PostgreSQL p = new PostgreSQL();
     private Stage primaryStage = null;
     private VBox root = null;
-    private HBox adminBtns = null;
     private final GridPane allTablesGP = new GridPane();
     private final Button addTableBtn = new Button("Add Table");
     private final Button allReceiptsBtn = new Button("All Receipts");
     private final Button statsBtn = new Button("Statistics");
-    private final String bigBtnFontSize = "-fx-font-size:40";
-    private final String smBtnFontSize = "-fx-font-size:20";
-    private final int maxWidthBtn = 250;
-    private final int minWidthBtn = 250;
+    private final String btnFontSize = "-fx-font-size:20";
+    private final int minMaxWidthBtn = 250;
+    private final int minMaxHeightBtn = 250;
     private int tableIndex;
     private int colIndex;
     private int rowIndex;
@@ -31,7 +29,7 @@ public class Root {
         root = new VBox(25);
         root.setPadding(new Insets(20, 20, 20, 20));
 
-        adminBtns = new HBox(25);
+        HBox adminBtns = new HBox(25);
 
         tableIndex = 1;
         colIndex = 0;
@@ -49,24 +47,23 @@ public class Root {
     }
 
     public void setInitialData() {
-        // Button configuration
-        addTableBtn.setMinHeight(100);
-        addTableBtn.setMaxHeight(100);
-        addTableBtn.setMinWidth(minWidthBtn);
-        addTableBtn.setMaxWidth(maxWidthBtn);
-        addTableBtn.setStyle(smBtnFontSize);
+        addTableBtn.setMinHeight(minMaxHeightBtn);
+        addTableBtn.setMaxHeight(minMaxHeightBtn);
+        addTableBtn.setMinWidth(minMaxWidthBtn);
+        addTableBtn.setMaxWidth(minMaxWidthBtn);
+        addTableBtn.setStyle(btnFontSize);
 
-        allReceiptsBtn.setMinHeight(100);
-        allReceiptsBtn.setMaxHeight(100);
-        allReceiptsBtn.setMinWidth(minWidthBtn);
-        allReceiptsBtn.setMaxWidth(maxWidthBtn);
-        allReceiptsBtn.setStyle(smBtnFontSize);
+        allReceiptsBtn.setMinHeight(minMaxHeightBtn);
+        allReceiptsBtn.setMaxHeight(minMaxHeightBtn);
+        allReceiptsBtn.setMinWidth(minMaxWidthBtn);
+        allReceiptsBtn.setMaxWidth(minMaxWidthBtn);
+        allReceiptsBtn.setStyle(btnFontSize);
 
-        statsBtn.setMinHeight(100);
-        statsBtn.setMaxHeight(100);
-        statsBtn.setMinWidth(minWidthBtn);
-        statsBtn.setMaxWidth(maxWidthBtn);
-        statsBtn.setStyle(smBtnFontSize);
+        statsBtn.setMinHeight(minMaxHeightBtn);
+        statsBtn.setMaxHeight(minMaxHeightBtn);
+        statsBtn.setMinWidth(minMaxWidthBtn);
+        statsBtn.setMaxWidth(minMaxWidthBtn);
+        statsBtn.setStyle(btnFontSize);
 
         allTablesGP.setVgap(25);
         allTablesGP.setHgap(25);
@@ -74,11 +71,11 @@ public class Root {
         // Creating the initial table buttons from database
         for (Object value : p.getTables().values()) {
             Button tableBtn = new Button(value.toString());
-            tableBtn.setMinHeight(100);
-            tableBtn.setMaxHeight(100);
-            tableBtn.setMaxWidth(maxWidthBtn);
-            tableBtn.setMinWidth(minWidthBtn);
-            tableBtn.setStyle(smBtnFontSize);
+            tableBtn.setMinHeight(minMaxHeightBtn);
+            tableBtn.setMaxHeight(minMaxHeightBtn);
+            tableBtn.setMaxWidth(minMaxWidthBtn);
+            tableBtn.setMinWidth(minMaxWidthBtn);
+            tableBtn.setStyle(btnFontSize);
 
             if (colIndex == 3) {
                 rowIndex++;
@@ -102,11 +99,11 @@ public class Root {
         addTableBtn.setOnAction(event -> {
             String tableName = "Table " + tableIndex;
             Button tableBtn = new Button(tableName);
-            tableBtn.setMinHeight(100);
-            tableBtn.setMaxHeight(100);
-            tableBtn.setMaxWidth(maxWidthBtn);
-            tableBtn.setMinWidth(minWidthBtn);
-            tableBtn.setStyle(smBtnFontSize);
+            tableBtn.setMinHeight(minMaxHeightBtn);
+            tableBtn.setMaxHeight(minMaxHeightBtn);
+            tableBtn.setMaxWidth(minMaxWidthBtn);
+            tableBtn.setMinWidth(minMaxWidthBtn);
+            tableBtn.setStyle(btnFontSize);
 
             if (colIndex == 3) {
                 rowIndex++;
@@ -125,8 +122,6 @@ public class Root {
         });
 
         statsBtn.setOnAction(event -> {
-            System.out.println("Here we should have the list of all drinks that are sold" +
-                    "and statistics of how many, how much etc etc.");
             Statistics stats = new Statistics(primaryStage);
             primaryStage.setTitle("Cafe App - " + statsBtn.getText());
             primaryStage.setScene(new Scene(stats.getNode(), 1920, 1080));

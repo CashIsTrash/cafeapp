@@ -22,28 +22,22 @@ import java.util.*;
 
 public class Table {
     private final PostgreSQL p = new PostgreSQL();
-    private Stage primaryStage;
-    private HBox space;
-    private VBox left;
-    private VBox right;
+    private final HBox space;
+    private final VBox left;
+    private final VBox right;
     private GridPane allButtons = null;
     private TableView<Drink> drinksTableView = null;
-    private Button printReceipt = new Button("Print Receipt");
-    private Button removeTable = new Button("Remove Table");
-    private Button removeDrinkBtn = new Button("Remove Drink");
-    private Button backBtn = new Button ("Go Back");
-    private String tableName;
+    private final Button printReceipt = new Button("Print Receipt");
+    private final Button removeTable = new Button("Remove Table");
+    private final Button removeDrinkBtn = new Button("Remove Drink");
+    private final Button backBtn = new Button ("Go Back");
+    private final String tableName;
 
-    private final String bigBtnFontSize = "-fx-font-size:40";
-    private final String smBtnFontSize = "-fx-font-size:20";
-    private final int maxWidthBtn = 250;
-    private final int minWidthBtn = 250;
     private int colIndex;
     private int rowIndex;
     private double sum;
 
-    public Table(String tn, Stage ps) {
-        primaryStage = ps;
+    public Table(String tn, Stage primaryStage) {
         tableName = tn;
 
         space = new HBox();
@@ -78,31 +72,34 @@ public class Table {
     }
 
     public void setInitialData() {
-        printReceipt.setMinHeight(100);
-        printReceipt.setMaxHeight(100);
-        printReceipt.setMinWidth(minWidthBtn);
-        printReceipt.setMaxWidth(maxWidthBtn);
-        printReceipt.setStyle(smBtnFontSize);
-        printReceipt.setDisable(true);
+        int minMaxHeightBtn = 100;
+        int minMaxWidthBtn = 250;
+        String smBtnFontSize = "-fx-font-size:20";
 
-        removeTable.setMinHeight(100);
-        removeTable.setMaxHeight(100);
-        removeTable.setMinWidth(minWidthBtn);
-        removeTable.setMaxWidth(maxWidthBtn);
+        printReceipt.setMinHeight(minMaxHeightBtn);
+        printReceipt.setMaxHeight(minMaxHeightBtn);
+        printReceipt.setMinWidth(minMaxWidthBtn);
+        printReceipt.setMaxWidth(minMaxWidthBtn);
+        printReceipt.setStyle(smBtnFontSize);
+
+        removeTable.setMinHeight(minMaxHeightBtn);
+        removeTable.setMaxHeight(minMaxHeightBtn);
+        removeTable.setMinWidth(minMaxWidthBtn);
+        removeTable.setMaxWidth(minMaxWidthBtn);
         removeTable.setStyle(smBtnFontSize);
         removeTable.setDisable(true);
 
-        removeDrinkBtn.setMinHeight(100);
-        removeDrinkBtn.setMaxHeight(100);
-        removeDrinkBtn.setMinWidth(minWidthBtn);
-        removeDrinkBtn.setMaxWidth(maxWidthBtn);
+        removeDrinkBtn.setMinHeight(minMaxHeightBtn);
+        removeDrinkBtn.setMaxHeight(minMaxHeightBtn);
+        removeDrinkBtn.setMinWidth(minMaxWidthBtn);
+        removeDrinkBtn.setMaxWidth(minMaxWidthBtn);
         removeDrinkBtn.setStyle(smBtnFontSize);
         removeDrinkBtn.setDisable(true);
 
-        backBtn.setMinHeight(100);
-        backBtn.setMaxHeight(100);
-        backBtn.setMinWidth(minWidthBtn);
-        backBtn.setMaxWidth(maxWidthBtn);
+        backBtn.setMinHeight(minMaxHeightBtn);
+        backBtn.setMaxHeight(minMaxHeightBtn);
+        backBtn.setMinWidth(minMaxWidthBtn);
+        backBtn.setMaxWidth(minMaxWidthBtn);
         backBtn.setStyle(smBtnFontSize);
 
         allButtons.add(printReceipt, colIndex, rowIndex);
@@ -119,8 +116,8 @@ public class Table {
                 Button drinkBtn = new Button(d.getName());
                 drinkBtn.setMinHeight(100);
                 drinkBtn.setMaxHeight(100);
-                drinkBtn.setMinWidth(minWidthBtn);
-                drinkBtn.setMaxWidth(maxWidthBtn);
+                drinkBtn.setMinWidth(minMaxWidthBtn);
+                drinkBtn.setMaxWidth(minMaxWidthBtn);
                 drinkBtn.setStyle(smBtnFontSize);
 
                 drinkBtn.setOnAction(event -> {
@@ -142,13 +139,10 @@ public class Table {
 
         // Add entries to TableView receiptTableView GUI
         int tableId = p.getTableId(tableName);
-
         LinkedHashMap<String, List<Drink>> tableDrinks = p.getTableDrinks(tableId);
         for (List<Drink> l : tableDrinks.values()) {
             for (Drink drink : l) drinksTableView.getItems().add(drink);
         }
-
-        printReceipt.setDisable(false);
 
         drinksTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         TableColumn<Drink, String> receiptCol1 = new TableColumn<>("Name");
@@ -157,16 +151,15 @@ public class Table {
         receiptCol1.setCellValueFactory(new PropertyValueFactory<>("name"));
         receiptCol2.setCellValueFactory(new PropertyValueFactory<>("category"));
         receiptCol3.setCellValueFactory(new PropertyValueFactory<>("price"));
-
         drinksTableView.getColumns().addAll(receiptCol1, receiptCol2, receiptCol3);
 
-        // Table Price Texts
         sum = p.getTotalSumOfTable(tableName);
-
         if (sum == 0) {
             printReceipt.setDisable(true);
+            removeTable.setDisable(false);
         }
 
+        // Table Price Texts
         Text sumText = new Text(25, 25, "Total Sum: " + sum);
         sumText.setFont(Font.font(null, FontWeight.BOLD, 32));
 

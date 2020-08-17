@@ -18,27 +18,23 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class AllReceipts {
-    private PostgreSQL p = new PostgreSQL();
+    private final PostgreSQL p = new PostgreSQL();
     private VBox space = null;
     private VBox controlBtns = null;
     private VBox allReceipts = null;
-    private VBox allReceiptsBtns = null;
     private TableView<Receipt> receiptTableView = null;
-    private Button removeReceiptBtn = new Button("Remove Receipt");
-    private Button backBtn = new Button ("Go Back");
-    private final String smBtnFontSize = "-fx-font-size:20";
-    private final int maxWidthBtn = 250;
-    private final int minWidthBtn = 250;
+    private final Button removeReceiptBtn = new Button("Remove Receipt");
+    private final Button backBtn = new Button ("Go Back");
 
     public AllReceipts(Stage primaryStage) {
         space = new VBox(25);
+        controlBtns = new VBox(25);
+        allReceipts = new VBox(25);
+        VBox allReceiptsBtns = new VBox(25);
+        receiptTableView = new TableView<>();
+
         space.setPadding(new Insets(25, 25, 25, 25));
 
-        controlBtns = new VBox(25);
-
-        allReceipts = new VBox(25);
-        allReceiptsBtns = new VBox(25);
-        receiptTableView = new TableView<>();
         this.setInitialData();
         this.eventListeners(primaryStage);
     }
@@ -48,6 +44,10 @@ public class AllReceipts {
     }
 
     public void setInitialData() {
+        int minMaxWidthBtn = 250;
+        int minMaxHeightBtn = 250;
+        String smBtnFontSize = "-fx-font-size:20";
+
         // Add entries to TableView receiptTableView GUI
         LinkedHashMap<String, List<Receipt>> tableReceipts = p.getAllReceipts();
         for (List<Receipt> l : tableReceipts.values()) {
@@ -63,24 +63,24 @@ public class AllReceipts {
         receiptCol2.setCellValueFactory(new PropertyValueFactory<>("server"));
         receiptCol3.setCellValueFactory(new PropertyValueFactory<>("date"));
         receiptCol4.setCellValueFactory(new PropertyValueFactory<>("price"));
-
         receiptTableView.getColumns().addAll(receiptCol1,receiptCol2, receiptCol3, receiptCol4);
+
         allReceipts.getChildren().addAll(receiptTableView);
 
-        removeReceiptBtn.setMinHeight(100);
-        removeReceiptBtn.setMaxHeight(100);
-        removeReceiptBtn.setMinWidth(minWidthBtn);
-        removeReceiptBtn.setMaxWidth(maxWidthBtn);
+        removeReceiptBtn.setMinHeight(minMaxHeightBtn);
+        removeReceiptBtn.setMaxHeight(minMaxHeightBtn);
+        removeReceiptBtn.setMinWidth(minMaxWidthBtn);
+        removeReceiptBtn.setMaxWidth(minMaxWidthBtn);
         removeReceiptBtn.setStyle(smBtnFontSize);
 
-        backBtn.setMinHeight(100);
-        backBtn.setMaxHeight(100);
-        backBtn.setMinWidth(minWidthBtn);
-        backBtn.setMaxWidth(maxWidthBtn);
+        backBtn.setMinHeight(minMaxHeightBtn);
+        backBtn.setMaxHeight(minMaxHeightBtn);
+        backBtn.setMinWidth(minMaxWidthBtn);
+        backBtn.setMaxWidth(minMaxWidthBtn);
         backBtn.setStyle(smBtnFontSize);
 
         controlBtns.getChildren().addAll(removeReceiptBtn, backBtn);
-        this.space.getChildren().addAll(allReceipts, controlBtns);
+        space.getChildren().addAll(allReceipts, controlBtns);
     }
 
     public void eventListeners(Stage primaryStage) {

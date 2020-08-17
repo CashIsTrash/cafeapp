@@ -5,9 +5,18 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import main.scene.Root;
 
+/**
+ * Starting point of the application
+ *
+ * @author Marcus Cvjeticanin
+ */
 public class Main extends Application {
-    private final PostgreSQL testP = new PostgreSQL();
 
+    /**
+     * Start method
+     *
+     * @param primaryStage : Stage - The stage object
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Cafe App");
@@ -15,16 +24,13 @@ public class Main extends Application {
 
         primaryStage.setScene(new Scene(root.getNode(), 1920, 1080));
         primaryStage.show();
-
-        // p.addTableBtn("Test Table");
-
-        // p.addDrinkToTable(1,2);
-        //p.addReceipt("Ljiljana Arsenijevic", "2020-06-30", 1);
-        // p.addDrink(20.0, "Zajercarsko", "Beer");
-
-        // Adding tables stored in database
     }
 
+    /**
+     * Main method
+     *
+     * @param args : String[]
+     */
     public static void main(String[] args) {
         launch(args);
     }
