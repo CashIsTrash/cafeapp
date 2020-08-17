@@ -12,6 +12,7 @@ import java.util.List;
  * @author Marcus Cvjeticanin
  */
 public interface IDatabase {
+
     /**
      * Add a table
      *

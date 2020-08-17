@@ -18,6 +18,11 @@ import main.model.Drink;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+/**
+ * Statistics stage
+ *
+ * @author Marcus Cvjeticanin
+ */
 public class Statistics {
     private final PostgreSQL p = new PostgreSQL();
     private VBox space = null;
@@ -25,6 +30,11 @@ public class Statistics {
     private TableView<Drink> drinksTableView = null;
     private final Button backBtn = new Button ("Go Back");
 
+    /**
+     * Creates an instance of Statistics
+     *
+     * @param primaryStage : Stage - The Stage object.
+     */
     public Statistics(Stage primaryStage) {
         space = new VBox(25);
         space.setPadding(new Insets(25, 25, 25, 25));
@@ -36,10 +46,18 @@ public class Statistics {
         this.eventListeners(primaryStage);
     }
 
+    /**
+     * Gets the node of the space.
+     *
+     * @return space : VBox - The VBox object.
+     */
     public VBox getNode() {
         return this.space;
     }
 
+    /**
+     * Sets the initial data to the space.
+     */
     public void setInitialData() {
         int minMaxWidthBtn = 250;
         int minMaxHeightBtn = 250;
@@ -86,6 +104,11 @@ public class Statistics {
         );
     }
 
+    /**
+     * Event Listeners
+     *
+     * @param primaryStage : Stage - The Stage object.
+     */
     public void eventListeners(Stage primaryStage) {
         backBtn.setOnAction(click -> {
             Root root = new Root(primaryStage);

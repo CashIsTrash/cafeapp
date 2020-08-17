@@ -17,6 +17,11 @@ import main.model.Receipt;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+/**
+ * AllReceipts stage
+ *
+ * @author Marcus Cvjeticanin
+ */
 public class AllReceipts {
     private final PostgreSQL p = new PostgreSQL();
     private VBox space = null;
@@ -26,6 +31,11 @@ public class AllReceipts {
     private final Button removeReceiptBtn = new Button("Remove Receipt");
     private final Button backBtn = new Button ("Go Back");
 
+    /**
+     * Creates an instance of AllReceipts
+     *
+     * @param primaryStage : Stage - The Stage object.
+     */
     public AllReceipts(Stage primaryStage) {
         space = new VBox(25);
         controlBtns = new VBox(25);
@@ -39,10 +49,18 @@ public class AllReceipts {
         this.eventListeners(primaryStage);
     }
 
+    /**
+     * Gets the node of the space.
+     *
+     * @return space : VBox - The VBox object.
+     */
     public VBox getNode() {
         return this.space;
     }
 
+    /**
+     * Sets the initial data to the space.
+     */
     public void setInitialData() {
         int minMaxWidthBtn = 250;
         int minMaxHeightBtn = 250;
@@ -83,6 +101,11 @@ public class AllReceipts {
         space.getChildren().addAll(allReceipts, controlBtns);
     }
 
+    /**
+     * Event Listeners
+     *
+     * @param primaryStage : Stage - The Stage object.
+     */
     public void eventListeners(Stage primaryStage) {
         receiptTableView.setOnMouseClicked((MouseEvent event) -> {
             if (event.getButton().equals(MouseButton.PRIMARY)) {

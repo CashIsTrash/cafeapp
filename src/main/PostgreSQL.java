@@ -33,8 +33,8 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-
             stmt = c.createStatement();
+
             String sql = "INSERT INTO cafe.tables VALUES (DEFAULT, \'" + tableName + "\');";
             stmt.executeUpdate(sql);
 
@@ -54,8 +54,8 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-
             stmt = c.createStatement();
+
             String sql = "INSERT INTO cafe.drinks VALUES (DEFAULT, \'" +
                     drinkPrice + "\', \'" + drinkName + "\', \'" + drinkCategory + "\');";
             stmt.executeUpdate(sql);
@@ -77,8 +77,8 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-
             stmt = c.createStatement();
+
             String sql = "INSERT INTO cafe.tables_drinks VALUES (" +
                     tableId + ", " + drinkId + ");";
             stmt.executeUpdate(sql);
@@ -151,6 +151,7 @@ public class PostgreSQL implements IDatabase {
             LinkedHashMap<Integer, String> allTables = new LinkedHashMap<>();
             String sql = "SELECT * FROM cafe.tables;";
             ResultSet rs = stmtQuery.executeQuery(sql);
+
             while (rs.next()) {
                 allTables.put(rs.getInt("id"), rs.getString("table_name"));
             }
@@ -164,7 +165,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-
         return null;
     }
 
@@ -186,6 +186,7 @@ public class PostgreSQL implements IDatabase {
             String sql = "SELECT * FROM cafe.drinks;";
             ResultSet rs = stmtQuery.executeQuery(sql);
             List<Drink> drinkList = new ArrayList<>();
+
             while (rs.next()) {
                 Drink d = new Drink(
                         rs.getInt("id"),
@@ -206,7 +207,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-
         return null;
     }
 
@@ -231,6 +231,7 @@ public class PostgreSQL implements IDatabase {
                     "WHERE d.id = td.drink_id AND td.table_id = '" + tableId + "';";
             ResultSet rs = stmtQuery.executeQuery(sql);
             List<Drink> drinkList = new ArrayList<>();
+
             while (rs.next()) {
                 Drink d = new Drink(
                         rs.getInt("id"),
@@ -251,7 +252,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-
         return null;
     }
 
@@ -294,7 +294,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-
         return null;
     }
 
@@ -318,8 +317,8 @@ public class PostgreSQL implements IDatabase {
                     "JOIN cafe.receipts cr ON cr.id = crt.receipt_id " +
                     "WHERE ct.id = crt.tables_id;";
             ResultSet rs = stmtQuery.executeQuery(sql);
-
             List<Receipt> receipts = new ArrayList<>();
+
             while (rs.next()) {
                 receipts.add(new Receipt(
                         rs.getInt("receipt_id"),
@@ -340,7 +339,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-
         return null;
     }
 
@@ -375,7 +373,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-
         return 0;
     }
 
@@ -411,7 +408,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-
         return 0;
     }
 
@@ -435,8 +431,8 @@ public class PostgreSQL implements IDatabase {
                     "JOIN cafe.tables tb ON tb.id = td.table_id " +
                     "WHERE d.id = td.drink_id AND td.table_id = " + tableId + ";";
             ResultSet rs = stmtQuery.executeQuery(sql);
-
             double sum = 0;
+
             while (rs.next()) {
                 sum = rs.getDouble("total_sum");
             }
@@ -450,7 +446,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-
         return 0;
     }
 
@@ -470,7 +465,6 @@ public class PostgreSQL implements IDatabase {
 
             LinkedHashMap<String, LinkedHashMap<String, Double>> stats = new LinkedHashMap<>();
             LinkedHashMap<String, Double> numbers = new LinkedHashMap<>();
-
             String sql = "SELECT SUM(drink_price) as total_revenue, AVG(drink_price) as drink_price_average, " +
                     "COUNT(drink_price) as sold_drinks FROM all_ordered_drinks";
             ResultSet rs = stmtQuery.executeQuery(sql);
@@ -491,7 +485,6 @@ public class PostgreSQL implements IDatabase {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
         }
-
         return null;
     }
 
@@ -526,7 +519,6 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-
             Statement stmtQuery = c.createStatement();
 
             String sql = "DELETE FROM cafe.tables_drinks WHERE table_id = " + tableId +
@@ -549,8 +541,8 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-
             Statement stmtQuery = c.createStatement();
+
             String sql1 = "DELETE FROM cafe.tables_drinks td WHERE td.table_id = " + tableId + ";";
             stmtQuery.executeUpdate(sql1);
 
@@ -570,11 +562,12 @@ public class PostgreSQL implements IDatabase {
             c = DriverManager
                     .getConnection(connectionUrl, connectionUser, connectionPwd);
             c.setAutoCommit(false);
-
             Statement stmtQuery = c.createStatement();
+
             int receiptId = receipt.getId();
             String sql1 = "DELETE FROM cafe.receipts_tables crt WHERE crt.receipt_id = " + receiptId + ";";
             String sql2 = "DELETE FROM cafe.receipts cr WHERE cr.id = " + receiptId + ";";
+
             stmtQuery.executeUpdate(sql1);
             stmtQuery.executeUpdate(sql2);
 

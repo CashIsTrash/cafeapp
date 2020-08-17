@@ -9,10 +9,15 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import main.PostgreSQL;
 
+/**
+ * Root stage
+ *
+ * @author Marcus Cvjeticanin
+ */
 public class Root {
     private final PostgreSQL p = new PostgreSQL();
     private Stage primaryStage = null;
-    private VBox root = null;
+    private VBox space = null;
     private final GridPane allTablesGP = new GridPane();
     private final Button addTableBtn = new Button("Add Table");
     private final Button allReceiptsBtn = new Button("All Receipts");
@@ -24,10 +29,15 @@ public class Root {
     private int colIndex;
     private int rowIndex;
 
+    /**
+     * Creates an instance of Root
+     *
+     * @param primaryStage : Stage - The Stage object.
+     */
     public Root(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        root = new VBox(25);
-        root.setPadding(new Insets(20, 20, 20, 20));
+        space = new VBox(25);
+        space.setPadding(new Insets(20, 20, 20, 20));
 
         HBox adminBtns = new HBox(25);
 
@@ -39,13 +49,21 @@ public class Root {
         this.eventListeners(primaryStage);
 
         adminBtns.getChildren().addAll(addTableBtn, allReceiptsBtn, statsBtn);
-        this.root.getChildren().addAll(adminBtns, allTablesGP);
+        this.space.getChildren().addAll(adminBtns, allTablesGP);
     }
 
+    /**
+     * Gets the node of the space.
+     *
+     * @return space : VBox - The VBox object.
+     */
     public VBox getNode() {
-        return this.root;
+        return this.space;
     }
 
+    /**
+     * Sets the initial data to the space.
+     */
     public void setInitialData() {
         addTableBtn.setMinHeight(minMaxHeightBtn);
         addTableBtn.setMaxHeight(minMaxHeightBtn);
@@ -95,6 +113,11 @@ public class Root {
         }
     }
 
+    /**
+     * Event Listeners
+     *
+     * @param primaryStage : Stage - The Stage object.
+     */
     public void eventListeners(Stage primaryStage) {
         addTableBtn.setOnAction(event -> {
             String tableName = "Table " + tableIndex;

@@ -20,6 +20,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * Table stage
+ *
+ * @author Marcus Cvjeticanin
+ */
 public class Table {
     private final PostgreSQL p = new PostgreSQL();
     private final HBox space;
@@ -37,6 +42,12 @@ public class Table {
     private int rowIndex;
     private double sum;
 
+    /**
+     * Creates an instance of Table
+     *
+     * @param tn : String - The table name.
+     * @param primaryStage : Stage - The Stage object.
+     */
     public Table(String tn, Stage primaryStage) {
         tableName = tn;
 
@@ -67,10 +78,18 @@ public class Table {
         this.eventListeners(primaryStage);
     }
 
+    /**
+     * Gets the node of the space.
+     *
+     * @return space : VBox - The VBox object.
+     */
     public HBox getNode() {
         return this.space;
     }
 
+    /**
+     * Sets the initial data to the space.
+     */
     public void setInitialData() {
         int minMaxHeightBtn = 100;
         int minMaxWidthBtn = 250;
@@ -167,6 +186,11 @@ public class Table {
         space.getChildren().addAll(left, right);
     }
 
+    /**
+     * Event Listeners
+     *
+     * @param primaryStage : Stage - The Stage object.
+     */
     public void eventListeners(Stage primaryStage) {
         printReceipt.setOnAction(clicked -> {
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
