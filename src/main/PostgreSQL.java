@@ -358,7 +358,7 @@ public class PostgreSQL implements IDatabase {
 
             int tableId = 0;
             String sql = "SELECT tl.id FROM cafe.tables tl WHERE tl.table_name = " +
-                    "'" + tableName + "'" + " LIMIT 1;";
+                    "'" + tableName + "'" + " ORDER BY tl.id DESC LIMIT 1;";
             ResultSet rs = stmtQuery.executeQuery(sql);
 
             while (rs.next()) {

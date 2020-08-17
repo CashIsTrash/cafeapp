@@ -27,7 +27,9 @@ SELECT
 FROM
 	cafe.tables tl
 WHERE
-	tl.table_name = 'Table 1';
+	tl.table_name = 'Table 1'
+ORDER BY
+    tl.id DESC LIMIT 1;
 
 --Get drinkId by Drink Name
 SELECT

@@ -63,7 +63,7 @@ public class AllReceipts {
      */
     public void setInitialData() {
         int minMaxWidthBtn = 250;
-        int minMaxHeightBtn = 250;
+        int minMaxHeightBtn = 100;
         String smBtnFontSize = "-fx-font-size:20";
 
         // Add entries to TableView receiptTableView GUI

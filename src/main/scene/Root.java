@@ -24,7 +24,7 @@ public class Root {
     private final Button statsBtn = new Button("Statistics");
     private final String btnFontSize = "-fx-font-size:20";
     private final int minMaxWidthBtn = 250;
-    private final int minMaxHeightBtn = 250;
+    private final int minMaxHeightBtn = 100;
     private int tableIndex;
     private int colIndex;
     private int rowIndex;

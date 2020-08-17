@@ -60,7 +60,7 @@ public class Statistics {
      */
     public void setInitialData() {
         int minMaxWidthBtn = 250;
-        int minMaxHeightBtn = 250;
+        int minMaxHeightBtn = 100;
         String smBtnFontSize = "-fx-font-size:20";
 
         backBtn.setMinHeight(minMaxHeightBtn);

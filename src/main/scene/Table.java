@@ -200,7 +200,10 @@ public class Table {
             p.addReceipt("Administrator", dateFormat.format(date), tableId, sum);
 
             // Remove all drinks from Table here
-            p.removeAllDrinksFromTable(tableId);
+            //p.removeAllDrinksFromTable(tableId);
+
+            // create a new table with the same tableName a
+            p.addTable(tableName);
 
             AllReceipts ar = new AllReceipts(primaryStage);
             primaryStage.setScene(new Scene(ar.getNode(), 1920, 1080));
