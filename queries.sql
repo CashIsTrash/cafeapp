@@ -4,7 +4,7 @@ SELECT
     cr.receipt_server, cr.receipt_date
 FROM
 	cafe.tables ct,
-  cafe.receipts_tables crt
+    cafe.receipts_tables crt
 JOIN
 	cafe.receipts cr ON cr.id = crt.receipt_id
 WHERE

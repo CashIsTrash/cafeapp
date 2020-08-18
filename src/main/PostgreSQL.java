@@ -465,9 +465,16 @@ public class PostgreSQL implements IDatabase {
 
             LinkedHashMap<String, LinkedHashMap<String, Double>> stats = new LinkedHashMap<>();
             LinkedHashMap<String, Double> numbers = new LinkedHashMap<>();
-            String sql = "SELECT SUM(drink_price) as total_revenue, AVG(drink_price) as drink_price_average, " +
+            String sql = "CREATE OR REPLACE VIEW all_ordered_drinks " +
+                    "AS SELECT tb.table_name, cd.id AS drink_id, cd.drink_name, cd.drink_price, cd.drink_category " +
+                    "FROM cafe.tables_drinks td " +
+                    "JOIN cafe.tables tb ON tb.id = td.table_id " +
+                    "JOIN cafe.drinks cd ON cd.id = td.drink_id";
+            String sql2 = "SELECT SUM(drink_price) as total_revenue, AVG(drink_price) as drink_price_average, " +
                     "COUNT(drink_price) as sold_drinks FROM all_ordered_drinks";
-            ResultSet rs = stmtQuery.executeQuery(sql);
+
+            stmtQuery.executeUpdate(sql);
+            ResultSet rs = stmtQuery.executeQuery(sql2);
 
             while (rs.next()) {
                 numbers.put("total_revenue", rs.getDouble("total_revenue"));
