@@ -5,6 +5,8 @@ A simple Cafe Desktop Application built using Java 11, JavaFX SDK 11.0.2 and mod
 
 ## Database Design
 
+![Cafe App Screenshot 6](cafeapp_6.png)
+
 ![Cafe App Screenshot 5](cafeapp_5.png)
 
 ## Screenshots
